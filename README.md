@@ -1,5 +1,8 @@
 # IEMS5722ChatApp
 Final Project
+## Group Member
+	LIU Kaihang 1155152392
+	KWAN ChunLing 1155140890
 ## Progress
 Assign3
 ## TODO:
