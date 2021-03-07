@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="15dp"
+    android:paddingTop="10dp"
+    android:paddingRight="15dp"
+    android:paddingBottom="10dp">
+
+    <TextView
+        android:id="@+id/msg_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#CDF9B0"
+        android:text="@string/msg_username"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:paddingTop="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"/>
+
+    <TextView
+        android:id="@+id/msg_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#CDF9B0"
+        android:text="@string/msg_content"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:paddingTop="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"/>
+
+
+    <TextView
+        android:id="@+id/msg_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/msg_time"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:background="#CDF9B0"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:gravity="right" />
+
+</LinearLayout>

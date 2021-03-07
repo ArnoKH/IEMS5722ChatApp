@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">A2_1155152392</string>
+    <string name="btn_r1">Default Chatroom</string>
+    <string name="tootbar_text_m">IEMS5722</string>
+    <string name="tootbar_text_c">Chatroom</string>
+    <string name="btn_send">Send</string>
+    <string name="et_hint">Input Message</string>
+    <string name="back_hint">Go Back</string>
+    <string name="msg_content">Message Content</string>
+    <string name="msg_time">11:22</string>
+    <string name="msg_username">LIU Kaihang</string>
+</resources>
