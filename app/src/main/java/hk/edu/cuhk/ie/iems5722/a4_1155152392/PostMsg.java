@@ -1,4 +1,4 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155152392;
+package hk.edu.cuhk.ie.iems5722.a4_1155152392;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -11,8 +11,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 
 public class PostMsg extends AsyncTask<String,Void,Void> {
     @Override
@@ -35,12 +33,9 @@ public class PostMsg extends AsyncTask<String,Void,Void> {
         }
         return null;
     }
-    /*@Override
-    protected void onPostExecute(Void result) {
 
-    }*/
     private void upload(List<String> para_name,List<String> para_values) throws IOException {
-        java.net.URL url = new URL("http://3.135.234.121/api/a2/send_message");
+        java.net.URL url = new URL("http://34.96.208.254/api/a3/send_message");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setReadTimeout(15000);
         conn.setConnectTimeout(15000);
@@ -62,9 +57,6 @@ public class PostMsg extends AsyncTask<String,Void,Void> {
         write.close();
         os.close();
 
-        int responseCode = conn.getResponseCode();
-        /*if(responseCode == HttpURLConnection.HTTP_OK){
-            //System.out.println(conn.getResponseMessage());
-        }*/
+        int responseCode = conn.getResponseCode();//没有这行会post失败
     }
 }

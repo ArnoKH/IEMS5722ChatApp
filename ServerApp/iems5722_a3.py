@@ -2,9 +2,12 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 from flask import g
+from flask import json as fjson
 import mysql.connector
+import requests,json,datetime
 
 app = Flask(__name__)
+#app.config['DEBUG'] = True
 
 class MyDatabase:
 	conn = None
@@ -22,6 +25,13 @@ class MyDatabase:
 		)
 		self.cursor = self.conn.cursor(dictionary = True)
 		return
+
+class DateEncoder(json.JSONEncoder):
+	def default(self, obj):
+		if isinstance(obj,datetime.datetime):
+			return fjson.JSONEncoder.default(self,obj)
+		else:
+			return json.JSONEncoder.default(self,obj)
 
 @app.before_request
 def before_request():
@@ -83,7 +93,13 @@ def send_message():
 		params = (int(chatroom_id),int(user_id),name,message)
 		g.mydb.cursor.execute(query,params)
 		g.mydb.conn.commit()
+		query = "SELECT * FROM messages WHERE chatroom_id = %s ORDER BY id DESC LIMIT 1"
+		params = (chatroom_id,)
+		g.mydb.cursor.execute(query,params)
+		topmessage = g.mydb.cursor.fetchall()
+		payload = {"chatroom_id": chatroom_id, "message": topmessage}
+		resp = requests.post("http://localhost:8001/api/a4/broadcast_room", data = json.dumps(payload))
 		return jsonify(status="OK")
 
 if __name__ == '__main__':
-	app.run()
+	app.run(host='127.0.0.1', port=8000)

@@ -1,4 +1,4 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155152392;
+package hk.edu.cuhk.ie.iems5722.a4_1155152392;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,28 +16,6 @@ public class MsgListAdapter extends ArrayAdapter<Msg> {
         super(context,textViewResourceID,objects);
         resourceID = textViewResourceID;
     }
-    /*private Context mContext;
-    private LayoutInflater mLayoutInflater;
-
-    public MsgListAdapter(Context context){
-        this.mContext = context;
-        mLayoutInflater = LayoutInflater.from(context);
-    }*/
-
-    /*@Override
-    public int getCount() {
-        return 0;
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }*/
 
     static class Viewholder{
         public TextView tvUsername,tvContent,tvTime;

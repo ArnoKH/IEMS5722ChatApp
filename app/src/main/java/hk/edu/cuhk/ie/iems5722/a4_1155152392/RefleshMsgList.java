@@ -1,4 +1,4 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155152392;
+package hk.edu.cuhk.ie.iems5722.a4_1155152392;
 
 import android.os.AsyncTask;
 
@@ -15,36 +15,45 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RefleshChatroom extends AsyncTask<Void, Void, List<Chatroom>> {
+public class RefleshMsgList extends AsyncTask<Integer, Void, List<Msg>>{
+
+    private int current_page,total_pages;
 
     interface RefleshCallBack{
-        public void getData(List<Chatroom> list);
+        void getData(List<Msg> list);
+        void backData(int cp, int tp);
     }
     RefleshCallBack cb;
 
-    public RefleshChatroom(RefleshCallBack cb){
+    public RefleshMsgList(RefleshCallBack cb){
         super();
         this.cb=cb;
     }
 
     @Override
-    protected List<Chatroom> doInBackground(Void... params) {
+    protected List<Msg> doInBackground(Integer... params) {
         //Log.d("InBackground","-----InBackground-----");
-        List<Chatroom> roomlist = new ArrayList<Chatroom>();
+        int chatroom_id=params[0];
+        int page=params[1];
+        List<Msg> msglist = new ArrayList<Msg>();
         String json_string=null;
         JSONObject json = null;
         try {
-            URL url = new URL("http://3.135.234.121/api/a2/get_chatrooms");
+            URL url = new URL("http://34.96.208.254/api/a3/get_messages?chatroom_id="+chatroom_id+"&page="+page);
             json_string=downloadUrl(url);
             json = new JSONObject(json_string);
             //String status = json.getString("status" ) ;
-            JSONArray array = json.getJSONArray("data");
+            JSONObject data = json.getJSONObject("data");
+            current_page = data.getInt("current_page");
+            total_pages = data.getInt("total_pages");
+            JSONArray array = data.getJSONArray("messages");
             for ( int i = 0; i < array.length(); i++) {
-                String roomname = array.getJSONObject(i).getString("name");
-                int roomid = array.getJSONObject(i).getInt("id");
-                roomlist.add(new Chatroom(roomname, Integer.toString(roomid)));
+                String username = array.getJSONObject(i).getString("name");
+                String msg_content = array.getJSONObject(i).getString("message");
+                String timestamp = array.getJSONObject(i).getString("message_time");
+                msglist.add(new Msg(username,msg_content,timestamp));
             }
-            return roomlist;
+            return msglist;
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -52,10 +61,11 @@ public class RefleshChatroom extends AsyncTask<Void, Void, List<Chatroom>> {
     }
 
     @Override
-    protected void onPostExecute(List<Chatroom> result) {
+    protected void onPostExecute(List<Msg> result) {
         //Log.d("PostExecute","-----PostExecute-----");
         super.onPostExecute(result);
         cb.getData(result);
+        cb.backData(current_page, total_pages);
     }
 
     private String downloadUrl(URL url) throws IOException {

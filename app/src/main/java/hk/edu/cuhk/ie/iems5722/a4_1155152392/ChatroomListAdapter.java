@@ -1,7 +1,6 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155152392;
+package hk.edu.cuhk.ie.iems5722.a4_1155152392;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
