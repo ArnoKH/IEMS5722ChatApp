@@ -2,9 +2,9 @@
 Final Project
 ## Group Member
 	LIU Kaihang 1155152392
-	KWAN ChunLing 1155140890
+	CHAN YuMing 1155156472 (Hasn't reponded me)
 ## Progress
-Assign3
+Assign4
 ## TODO:
 
 1.Login feature
@@ -13,7 +13,7 @@ Assign3
   
 	 1.2 login
   
-2.Add friend feature
+2.Add friend feature (Planning)
 
 	 2.1 QR Code
   
