@@ -6,14 +6,8 @@ Final Project
 ## Progress
 Assign4
 ## TODO:
-
-1.Login feature
-
-	 1.1 regiester
   
-	 1.2 login
-  
-2.Add friend feature (Planning)
+Add friend feature (Planning)
 
 	 2.1 QR Code
   
