@@ -98,8 +98,65 @@ def send_message():
 		g.mydb.cursor.execute(query,params)
 		topmessage = g.mydb.cursor.fetchall()
 		payload = {"chatroom_id": chatroom_id, "message": topmessage}
-		resp = requests.post("http://localhost:8001/api/a4/broadcast_room", data = json.dumps(payload))
+		resp = requests.post("http://localhost:8001/api/a4/broadcast_room", data = json.dumps(payload,cls=DateEncoder))
 		return jsonify(status="OK")
+
+@app.route('/api/a3/signup')
+def signup():
+	uname = request.args.get("username")
+	uid = request.args.get("userid")
+	epsw = request.args.get("epsw")
+	query = "SELECT * FROM userinfos WHERE name = %s"
+	params = (uname,)
+	g.mydb.cursor.execute(query,params)
+	t = g.mydb.cursor.fetchall()
+	t1 = g.mydb.cursor.rowcount
+	query = "SELECT * FROM userinfos WHERE uid = %s"
+	params = (int(uid),)
+	g.mydb.cursor.execute(query,params)
+	t = g.mydb.cursor.fetchall()
+	t2 = g.mydb.cursor.rowcount
+	if(t1 > 0):
+		return jsonify(status="Username already exist.")
+	elif(t2 > 0):
+		return jsonify(status="UserID already exist.")
+	else:
+		query = "INSERT INTO userinfos(name,uid,epsw) VALUES (%s,%s,%s)"
+		params = (uname,int(uid),epsw)
+		g.mydb.cursor.execute(query,params)
+		g.mydb.conn.commit()
+		return jsonify(status="OK")
+
+@app.route('/api/a3/login')
+def login():
+	method = int(request.args.get("method"))
+	user = request.args.get("user")
+	epsw = request.args.get("epsw")
+	if(method == 0):
+		query = "SELECT name,epsw FROM userinfos WHERE uid = %s"
+		params = (int(user),)
+		g.mydb.cursor.execute(query,params)
+		t = g.mydb.cursor.fetchall()
+		r = g.mydb.cursor.rowcount
+		if(r == 0):
+			return jsonify(status="UserID does not exist.")
+		elif(epsw == t[0]["epsw"]):
+			return jsonify(status="OK", username=t[0]["name"], userid=int(user))
+		else:
+			return jsonify(status="Password incorrect.")
+	else:
+		query = "SELECT uid,epsw FROM userinfos WHERE name = %s"
+		params = (user,)
+		g.mydb.cursor.execute(query,params)
+		t = g.mydb.cursor.fetchall()
+		r = g.mydb.cursor.rowcount
+		if(r == 0):
+			return jsonify(status="Username does not exist.")
+		elif(epsw == t[0]["epsw"]):
+			return jsonify(status="OK", username=user, userid=t[0]["uid"])
+		else:
+			return jsonify(status="Password incorrect.")
+
 
 if __name__ == '__main__':
 	app.run(host='127.0.0.1', port=8000)

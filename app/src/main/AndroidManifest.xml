@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="hk.edu.cuhk.ie.iems5722.a4_1155152392">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,20 +13,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IEMS5722ChatApp">
         <activity
-            android:name="hk.edu.cuhk.ie.iems5722.a4_1155152392.ChatActivity"
-            android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar">
-
-        </activity>
-        <activity
-            android:name="hk.edu.cuhk.ie.iems5722.a4_1155152392.MainActivity"
+            android:name=".LoginActivity"
             android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".ChatActivity"
+            android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar" />
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar" />
     </application>
-
 </manifest>

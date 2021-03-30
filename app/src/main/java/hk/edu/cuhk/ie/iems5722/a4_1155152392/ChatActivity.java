@@ -48,6 +48,7 @@ public class ChatActivity extends AppCompatActivity {
     //方便用的全局变量
     private MsgListAdapter arrayAdapter;
     private int rid;//房间ID
+    private String username, userid;
     private List<Msg> msglist = new ArrayList<>();//信息总列表
 
     private Socket mSocket;
@@ -79,6 +80,8 @@ public class ChatActivity extends AppCompatActivity {
         String title=getIntent().getStringExtra("title");
         mTVtitle.setText(title);
         rid=Integer.parseInt(getIntent().getStringExtra("rid"));
+        username = getIntent().getStringExtra("username");
+        userid = getIntent().getStringExtra("userid");
         //初始化ListView
         arrayAdapter = new MsgListAdapter(ChatActivity.this, R.layout.layout_msglist_item, msglist);
         mLvMSG.setAdapter(arrayAdapter);
@@ -145,7 +148,7 @@ public class ChatActivity extends AppCompatActivity {
                 if (mEt.getText().toString().length() != 0) {
                     //截取信息
                     String content = mEt.getText().toString();
-                    //截取时间 TODO:与服务端格式保持一致
+                    //截取时间
                     /*Calendar cal = Calendar.getInstance();
                     int y = cal.get(Calendar.YEAR);
                     int mon = cal.get(Calendar.MONTH)+1;
@@ -156,7 +159,7 @@ public class ChatActivity extends AppCompatActivity {
                     String time = y+"-"+(mon<10?"0":"")+mon+"-"+(d<10?"0":"")+d+" "+(h<10?"0":"")+h+":"+(mi<10?"0":"")+mi+":"+(sec<10?"0":"")+sec;*/
                     //发送至服务器
                     PostMsg mTask = new PostMsg();
-                    mTask.execute(Integer.toString(rid),"1155152392","LIU Kaihang",content);
+                    mTask.execute(Integer.toString(rid), userid, username, content);
                     //在本地消息列表添加新消息
                     //会触发服务器广播所以注释掉，以免重复添加
                     /*Msg newmsg = new Msg("LIU Kaihang",content,time);

@@ -9,4 +9,9 @@
     <string name="msg_content">Message Content</string>
     <string name="msg_time">11:22</string>
     <string name="msg_username">LIU Kaihang</string>
+    <string name="username">Username</string>
+    <string name="userid">UserID</string>
+    <string name="password">Password</string>
+    <string name="btn_signup">Sign Up</string>
+    <string name="btn_login">Login</string>
 </resources>

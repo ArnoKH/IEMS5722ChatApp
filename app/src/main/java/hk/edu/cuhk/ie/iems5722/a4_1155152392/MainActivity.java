@@ -21,11 +21,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private final List<Chatroom> ctroomlist = new ArrayList<>();
     private ChatroomListAdapter arrayAdapter;
 
+    private String username, userid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //Log.d("MainActivity","-----MainCreate-----");
+        username = getIntent().getStringExtra("username");
+        userid = getIntent().getStringExtra("userid");
         ListView mLVct = findViewById(R.id.lv_chatroom_list);
         arrayAdapter = new ChatroomListAdapter(MainActivity.this, R.layout.layout_chatroomlist_item, ctroomlist, this);
         mLVct.setAdapter(arrayAdapter);
@@ -54,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Intent intent = new Intent(MainActivity.this, ChatActivity.class);
         intent.putExtra("title", mBtn_room.getText());
         intent.putExtra("rid", mTv_rid.getText());
+        intent.putExtra("username", username);
+        intent.putExtra("userid", userid);
         startActivity(intent);
     }
 

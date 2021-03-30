@@ -18,7 +18,7 @@ import java.util.List;
 public class RefleshChatroom extends AsyncTask<Void, Void, List<Chatroom>> {
 
     interface RefleshCallBack{
-        public void getData(List<Chatroom> list);
+        void getData(List<Chatroom> list);
     }
     RefleshCallBack cb;
 
@@ -35,7 +35,7 @@ public class RefleshChatroom extends AsyncTask<Void, Void, List<Chatroom>> {
         JSONObject json = null;
         try {
             URL url = new URL("http://34.96.208.254/api/a3/get_chatrooms");
-            json_string=downloadUrl(url);
+            json_string=Download.downloadUrl(url);
             json = new JSONObject(json_string);
             //String status = json.getString("status" ) ;
             JSONArray array = json.getJSONArray("data");
@@ -58,38 +58,5 @@ public class RefleshChatroom extends AsyncTask<Void, Void, List<Chatroom>> {
         cb.getData(result);
     }
 
-    private String downloadUrl(URL url) throws IOException {
-        InputStream stream = null;
-        HttpURLConnection connection = null;
-        String result = "";
-        try {
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setReadTimeout(3000);
-            connection.setConnectTimeout(3000);
-            connection.setRequestMethod("GET");
-            connection.setDoInput(true);
-            connection.connect();
-            int responseCode = connection.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                throw new IOException("HTTP error code: " + responseCode);
-            }
-            stream = connection.getInputStream();
-            if (stream != null) {
-                String line ;
-                BufferedReader br = new BufferedReader(new InputStreamReader(stream));
-                while ( (line = br.readLine()) != null ) {
-                    result += line ;
-                }
-            }
-        } finally {
-            if (stream != null) {
-                stream.close();
-            }
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-        //System.out.println(result);
-        return result;
-    }
+
 }
