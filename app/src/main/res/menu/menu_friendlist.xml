@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="hk.edu.cuhk.ie.iems5722.a4_1155152392.FriendListActivity">
+
+    <item
+        android:id="@+id/item_refresh_f"
+        android:icon="@drawable/refreshbtn"
+        android:orderInCategory="100"
+        android:title="@string/refresh_hint"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/item_showQRcode"
+        android:orderInCategory="101"
+        android:title="@string/friendlist_menu_1"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/item_scan"
+        android:orderInCategory="102"
+        android:title="@string/friendlist_menu_2"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/item_location"
+        android:orderInCategory="103"
+        android:title="@string/friendlist_menu_3"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/item_nfc"
+        android:orderInCategory="104"
+        android:title="@string/friendlist_menu_4"
+        app:showAsAction="never" />
+</menu>

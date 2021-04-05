@@ -1,11 +1,14 @@
 <resources>
     <string name="app_name">A4_1155152392</string>
     <string name="btn_r1">Default Chatroom</string>
-    <string name="tootbar_text_m">IEMS5722</string>
-    <string name="tootbar_text_c">Chatroom</string>
+    <string name="toolbar_text_m">IEMS5722</string>
+    <string name="toolbar_text_c">Chatroom</string>
+    <string name="toolbar_text_f">Friend List</string>
     <string name="btn_send">Send</string>
     <string name="et_hint">Input Message</string>
     <string name="back_hint">Go Back</string>
+    <string name="refresh_hint">Refresh</string>
+    <string name="userinfo_hint">User Information</string>
     <string name="msg_content">Message Content</string>
     <string name="msg_time">11:22</string>
     <string name="msg_username">LIU Kaihang</string>
@@ -14,4 +17,9 @@
     <string name="password">Password</string>
     <string name="btn_signup">Sign Up</string>
     <string name="btn_login">Login</string>
+    <string name="tv_loginid">Logged in as Username</string>
+    <string name="friendlist_menu_1">Show QR Code</string>
+    <string name="friendlist_menu_2">Add via QR Code</string>
+    <string name="friendlist_menu_3">Add via Location</string>
+    <string name="friendlist_menu_4">Add via NFC</string>
 </resources>

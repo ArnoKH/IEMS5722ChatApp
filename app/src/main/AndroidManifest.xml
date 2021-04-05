@@ -13,18 +13,27 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IEMS5722ChatApp">
         <activity
+            android:name=".FriendListActivity"
+            android:label="@string/toolbar_text_f"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar"/>
+        <activity
             android:name=".LoginActivity"
             android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ChatActivity"
+            android:label="@string/toolbar_text_c"
             android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar" />
         <activity
             android:name=".MainActivity"
+            android:label="@string/toolbar_text_m"
             android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar" />
     </application>
+
 </manifest>

@@ -4,49 +4,33 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_c"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme">
+        android:orientation="horizontal">
 
-        <RelativeLayout
+        <ImageButton
+            android:id="@+id/toolbar_c_btn_back"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:padding="12dp"
+            android:background="@color/purple_500"
+            android:contentDescription="@string/back_hint"
+            android:scaleType="fitCenter"
+            android:src="@drawable/backbtn" />
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_c"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="60dp"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme">
 
-            <ImageButton
-                android:id="@+id/toolbar_btn_c"
-                android:layout_alignParentLeft="true"
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:background="@color/purple_500"
-                android:contentDescription="@string/back_hint"
-                android:src="@drawable/backbtn" />
+        </androidx.appcompat.widget.Toolbar>
 
-            <TextView
-                android:id="@+id/toolbar_text_c"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:gravity="center_vertical"
-                android:layout_toRightOf="@id/toolbar_btn_c"
-                android:text="@string/tootbar_text_c"
-                android:textColor="#ffffff"
-                android:textSize="30sp" />
-
-            <ImageButton
-                android:id="@+id/toolbar_btn_reflesh"
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:background="@color/purple_500"
-                android:contentDescription="@string/back_hint"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
-                android:src="@drawable/refleshbtn" />
-        </RelativeLayout>
-    </androidx.appcompat.widget.Toolbar>
+    </LinearLayout>
 
     <ListView
         android:id="@+id/lv_msg_list"

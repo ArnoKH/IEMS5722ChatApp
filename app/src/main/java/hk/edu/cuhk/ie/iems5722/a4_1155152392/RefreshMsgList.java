@@ -6,26 +6,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RefleshMsgList extends AsyncTask<Integer, Void, List<Msg>>{
+public class RefreshMsgList extends AsyncTask<Integer, Void, List<Msg>> {
 
     private int current_page,total_pages;
 
-    interface RefleshCallBack{
+    interface RefreshCallBack {
         void getData(List<Msg> list);
         void backData(int cp, int tp);
     }
-    RefleshCallBack cb;
+    RefreshCallBack cb;
 
-    public RefleshMsgList(RefleshCallBack cb){
+    public RefreshMsgList(RefreshCallBack cb){
         super();
         this.cb=cb;
     }

@@ -6,45 +6,41 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RefleshChatroom extends AsyncTask<Void, Void, List<Chatroom>> {
+public class RefreshFriendList extends AsyncTask<String, Void, List<User>> {
 
-    interface RefleshCallBack{
-        void getData(List<Chatroom> list);
+    interface RefreshCallBack{
+        void getData(List<User> list);
     }
-    RefleshCallBack cb;
+    RefreshFriendList.RefreshCallBack cb;
 
-    public RefleshChatroom(RefleshCallBack cb){
+    public RefreshFriendList(RefreshFriendList.RefreshCallBack cb){
         super();
         this.cb=cb;
     }
 
     @Override
-    protected List<Chatroom> doInBackground(Void... params) {
-        //Log.d("InBackground","-----InBackground-----");
-        List<Chatroom> roomlist = new ArrayList<Chatroom>();
+    protected List<User> doInBackground(String... params) {
+        List<User> frienduserlist = new ArrayList<User>();
+        String userid = params[0];
         String json_string=null;
         JSONObject json = null;
         try {
-            URL url = new URL("http://34.96.208.254/api/a3/get_chatrooms");
+            URL url = new URL("http://34.96.208.254/api/a3/get_friend_list?userid="+userid);
             json_string=Download.downloadUrl(url);
             json = new JSONObject(json_string);
             //String status = json.getString("status" ) ;
             JSONArray array = json.getJSONArray("data");
             for ( int i = 0; i < array.length(); i++) {
-                String roomname = array.getJSONObject(i).getString("name");
-                int roomid = array.getJSONObject(i).getInt("id");
-                roomlist.add(new Chatroom(roomname, Integer.toString(roomid)));
+                String friendname = array.getJSONObject(i).getString("friendusername");
+                int friendid = array.getJSONObject(i).getInt("frienduserid");
+                frienduserlist.add(new User(friendname, Integer.toString(friendid)));
             }
-            return roomlist;
+            return frienduserlist;
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -52,11 +48,9 @@ public class RefleshChatroom extends AsyncTask<Void, Void, List<Chatroom>> {
     }
 
     @Override
-    protected void onPostExecute(List<Chatroom> result) {
+    protected void onPostExecute(List<User> result) {
         //Log.d("PostExecute","-----PostExecute-----");
         super.onPostExecute(result);
         cb.getData(result);
     }
-
-
 }

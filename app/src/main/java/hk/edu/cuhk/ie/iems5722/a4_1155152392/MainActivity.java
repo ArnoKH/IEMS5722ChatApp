@@ -1,11 +1,12 @@
 package hk.edu.cuhk.ie.iems5722.a4_1155152392;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -18,8 +19,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, ChatroomListAdapter.Callback {
 
-    private final List<Chatroom> ctroomlist = new ArrayList<>();
+    private List<Chatroom> ctroomlist = new ArrayList<>();
     private ChatroomListAdapter arrayAdapter;
+    private ListView mLVct;
+    private TextView mTvLoginID;
+    private Toolbar mToolbar;
 
     private String username, userid;
 
@@ -28,23 +32,43 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //Log.d("MainActivity","-----MainCreate-----");
+        mToolbar = findViewById(R.id.toolbar_m);
+        setSupportActionBar(mToolbar);
         username = getIntent().getStringExtra("username");
         userid = getIntent().getStringExtra("userid");
-        ListView mLVct = findViewById(R.id.lv_chatroom_list);
+        mLVct = findViewById(R.id.lv_chatroom_list);
+        mTvLoginID = findViewById(R.id.tv_loginas_username);
+        mTvLoginID.setText("Logged in as "+username);
         arrayAdapter = new ChatroomListAdapter(MainActivity.this, R.layout.layout_chatroomlist_item, ctroomlist, this);
         mLVct.setAdapter(arrayAdapter);
-        RefleshChatroom mTask = new RefleshChatroom(new RefleshChatroom.RefleshCallBack() {
+        RefreshChatroom mTask = new RefreshChatroom(new RefreshChatroom.RefreshCallBack() {
             //回调：更新房间列表
             @Override
             public void getData(List<Chatroom> list) {
-                for (int i = 0; i < list.size(); i++) {
-                    newChatroom(list.get(i).getRoomname(), list.get(i).getRoomID());
-                }
+                ctroomlist.addAll(list);
                 arrayAdapter.notifyDataSetChanged();
             }
         });
         mTask.execute();
         mLVct.setOnItemClickListener(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.item_userinfo) {
+            Intent intent = new Intent(MainActivity.this, FriendListActivity.class);
+            intent.putExtra("username", username);
+            intent.putExtra("userid", userid);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

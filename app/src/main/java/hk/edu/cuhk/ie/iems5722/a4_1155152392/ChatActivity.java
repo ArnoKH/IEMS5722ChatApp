@@ -1,19 +1,19 @@
 //聊天室
 package hk.edu.cuhk.ie.iems5722.a4_1155152392;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationManagerCompat;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -21,18 +21,14 @@ import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.ref.WeakReference;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -41,15 +37,19 @@ import io.socket.emitter.Emitter;
 public class ChatActivity extends AppCompatActivity {
 
     //各类控件
-    private ImageButton mBtnBack, mBtnSend, mBtnReflesh;
-    private TextView mTVtitle;
+    private ImageButton mBtnBack, mBtnSend;
     private ListView mLvMSG;
     private EditText mEt;
+    private Toolbar mToolbar;
     //方便用的全局变量
     private MsgListAdapter arrayAdapter;
     private int rid;//房间ID
     private String username, userid;
     private List<Msg> msglist = new ArrayList<>();//信息总列表
+    //加载消息列表相关变量
+    private int[] cpage = new int[1];//已加载的页数
+    private int[] tpage = new int[1];//总页数
+    private boolean[] scrolltrigger = {true};//滚动触发开关=防止重复触发用
 
     private Socket mSocket;
 
@@ -65,20 +65,17 @@ public class ChatActivity extends AppCompatActivity {
         //Log.d("ChatActivity","-----ChatCreate-----");
         setContentView(R.layout.activity_chat);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);//防止直接弹输入法
-        //加载消息列表相关变量
-        final int[] cpage = new int[1];//已加载的页数
-        final int[] tpage = new int[1];//总页数
-        final boolean[] scrolltrigger = {true};//滚动触发开关=防止重复触发用
+        mToolbar = findViewById(R.id.toolbar_c);
+        setSupportActionBar(mToolbar);
+        ActionBar ab = getSupportActionBar();
         //绑定控件
-        mBtnBack = findViewById(R.id.toolbar_btn_c);
+        mBtnBack = findViewById(R.id.toolbar_c_btn_back);
         mBtnSend = findViewById(R.id.btn_send);
-        mBtnReflesh = findViewById(R.id.toolbar_btn_reflesh);
-        mTVtitle = findViewById(R.id.toolbar_text_c);
         mEt = findViewById(R.id.et);
         mLvMSG = findViewById(R.id.lv_msg_list);
         //设置房间信息
         String title=getIntent().getStringExtra("title");
-        mTVtitle.setText(title);
+        ab.setTitle(title);
         rid=Integer.parseInt(getIntent().getStringExtra("rid"));
         username = getIntent().getStringExtra("username");
         userid = getIntent().getStringExtra("userid");
@@ -108,36 +105,9 @@ public class ChatActivity extends AppCompatActivity {
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //跳转到MainActivity
-                //Intent intent = new Intent(ChatActivity.this,MainActivity.class);
-                //startActivity(intent);
                 //结束当前Activity
                 mSocket.emit("leave", rid);
                 finish();
-            }
-        });
-
-        //刷新键的点击监听
-        mBtnReflesh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RefleshMsgList mTask= new RefleshMsgList(new RefleshMsgList.RefleshCallBack(){
-                    //回调：更新消息列表
-                    @Override
-                    public void getData(List<Msg> list) {
-                        for(int i=0;i<list.size();i++){
-                            newMsg(list.get(i).getUserName(),list.get(i).getContent(),list.get(i).getTime());
-                        }
-                        arrayAdapter.notifyDataSetChanged();
-                    }
-                    //回调：更新已加载页数和总页数
-                    @Override
-                    public void backData(int cp, int tp){
-                        cpage[0] =cp;
-                        tpage[0] =tp;
-                    }
-                });
-                mTask.execute(rid,1);//只用于进房间首次刷新=加载第一页
             }
         });
 
@@ -188,7 +158,7 @@ public class ChatActivity extends AppCompatActivity {
                 if(firstVisibleItem==0 && cpage[0]<tpage[0] && scrolltrigger[0]){
                     scrolltrigger[0] =false;//关闭开关防止连续触发
                     int readpage=cpage[0]+1;
-                    RefleshMsgList mTask= new RefleshMsgList(new RefleshMsgList.RefleshCallBack(){
+                    RefreshMsgList mTask= new RefreshMsgList(new RefreshMsgList.RefreshCallBack(){
                         //回调：更新消息列表
                         @Override
                         public void getData(List<Msg> list) {
@@ -209,6 +179,37 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.item_refresh_c) {
+            RefreshMsgList mTask= new RefreshMsgList(new RefreshMsgList.RefreshCallBack(){
+                //回调：更新消息列表
+                @Override
+                public void getData(List<Msg> list) {
+                    for(int i=0;i<list.size();i++){
+                        newMsg(list.get(i).getUserName(),list.get(i).getContent(),list.get(i).getTime());
+                    }
+                    arrayAdapter.notifyDataSetChanged();
+                }
+                //回调：更新已加载页数和总页数
+                @Override
+                public void backData(int cp, int tp){
+                    cpage[0] =cp;
+                    tpage[0] =tp;
+                }
+            });
+            mTask.execute(rid,1);//只用于进房间首次刷新=加载第一页
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     //扩展消息表

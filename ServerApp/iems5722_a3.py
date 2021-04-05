@@ -157,6 +157,14 @@ def login():
 		else:
 			return jsonify(status="Password incorrect.")
 
+@app.route('/api/a3/get_friend_list')
+def get_friend_list():
+	userid = request.args.get("userid")
+	query = "SELECT friendusername,frienduserid FROM friends WHERE hostuserid = %s"
+	params = (int(userid),)
+	g.mydb.cursor.execute(query,params)
+	data = g.mydb.cursor.fetchall()
+	return jsonify(status="OK", data=data)
 
 if __name__ == '__main__':
 	app.run(host='127.0.0.1', port=8000)
