@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -12,11 +13,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.IEMS5722ChatApp">
+        <activity android:name=".CodeScannerActivity"></activity>
         <activity
             android:name=".FriendListActivity"
             android:label="@string/toolbar_text_f"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar"/>
+            android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar" />
         <activity
             android:name=".LoginActivity"
             android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar">

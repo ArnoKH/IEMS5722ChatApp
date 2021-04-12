@@ -2,20 +2,21 @@
 Final Project
 ## Group Member
 	LIU Kaihang 1155152392
-	CHAN YuMing 1155156472 (Hasn't reponded me)
 ## Progress
-Add Friend Feature: Basic Feature Support Completed
+Add Friend Feature: QR Code Completed Need Testing
 ## TODO:
   
-Add friend feature (Planning)
-
-	 2.1 QR Code
+Add friend feature
   
 	 2.2 Nearby Location
   
 	 2.3 NFC
-## 可優化的地方
 
-1.密碼驗證應使用DH Key-Exchange防止MITM攻擊
+Need Testing
 
-2.a4的廣播api發送的數據冗餘過多
+     2.1 QR Code
+## 可优化的地方
+
+1.密码验证应使用DH Key-Exchange防止MITM攻击
+
+2.a4的广播api发送的数据冗余过多

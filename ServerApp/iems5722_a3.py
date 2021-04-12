@@ -166,5 +166,35 @@ def get_friend_list():
 	data = g.mydb.cursor.fetchall()
 	return jsonify(status="OK", data=data)
 
+@app.route('/api/a3/add_friend')
+def add_friend():
+	hname = request.args.get("hname")
+	hid = request.args.get("hid")
+	fname = request.args.get("fname")
+	fid = request.args.get("fid")
+	query = "SELECT * FROM friends WHERE hostuserid = %s AND frienduserid = %s"
+	params = (int(hid),int(fid))
+	g.mydb.cursor.execute(query,params)
+	t = g.mydb.cursor.fetchall()
+	r1 = g.mydb.cursor.rowcount
+	params = (int(fid),int(hid))
+	g.mydb.cursor.execute(query,params)
+	t = g.mydb.cursor.fetchall()
+	r2 = g.mydb.cursor.rowcount
+	if r1 == 1:
+		return jsonify(status="Already friend.")
+	if r1 == 0:
+		query = "INSERT INTO friends(hostuserid,friendusername,frienduserid) VALUES (%s,%s,%s)"
+		params = (int(hid),int(fid),fname)
+		g.mydb.cursor.execute(query,params)
+		g.mydb.conn.commit()
+		if r2 == 0:
+			query = "INSERT INTO friends(hostuserid,friendusername,frienduserid) VALUES (%s,%s,%s)"
+			params = (int(fid),int(hid),hname)
+			g.mydb.cursor.execute(query,params)
+			g.mydb.conn.commit()
+		return jsonify(status="OK")
+	return jsonify(status="ERROR")
+
 if __name__ == '__main__':
 	app.run(host='127.0.0.1', port=8000)
