@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -12,12 +13,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.IEMS5722ChatApp">
-        <activity android:name=".CodeScannerActivity"></activity>
+        android:theme="@style/Theme.IEMS5722ChatApp"
+        android:usesCleartextTraffic="true" >
+        <activity
+            android:name=".AddFriendByLocationActivity"
+            android:label="@string/toolbar_text_f2"
+            android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar" />
+        <activity
+            android:name=".CodeScannerActivity"
+            android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar" />
         <activity
             android:name=".FriendListActivity"
             android:label="@string/toolbar_text_f"
-            android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.IEMS5722ChatApp.NoActionBar" />
         <activity
             android:name=".LoginActivity"

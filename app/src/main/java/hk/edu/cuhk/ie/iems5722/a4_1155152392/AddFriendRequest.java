@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public class AddFriendRequest  extends AsyncTask<String, Void, String> {
+public class AddFriendRequest extends AsyncTask<String, Void, String> {
 
     interface AddFriendCallBack{
         void getData(String status);
@@ -39,5 +39,12 @@ public class AddFriendRequest  extends AsyncTask<String, Void, String> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    protected void onPostExecute(String status) {
+        //Log.d("PostExecute","-----PostExecute-----");
+        super.onPostExecute(status);
+        cb.getData(status);
     }
 }

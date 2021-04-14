@@ -18,7 +18,7 @@ public class FriendListAdapter extends ArrayAdapter<User> {
     }
 
     static class Viewholder{
-        public TextView tvUsername;
+        public TextView tvUsername,tvUserid;
     }
 
     @Override
@@ -31,6 +31,7 @@ public class FriendListAdapter extends ArrayAdapter<User> {
             //convertView = mLayoutInflater.inflate(R.layout.layout_msglist_item,null);
             viewholder = new FriendListAdapter.Viewholder();
             viewholder.tvUsername = view.findViewById(R.id.fl_username);
+            viewholder.tvUserid = view.findViewById(R.id.fl_userid);
             view.setTag(viewholder); //将viewholder存储在view中
         }else{
             view = convertView;
@@ -38,6 +39,7 @@ public class FriendListAdapter extends ArrayAdapter<User> {
         }
         //给控件赋值
         viewholder.tvUsername.setText(user.getUserName());
+        viewholder.tvUserid.setText(user.getUserID());
         return view;
     }
 

@@ -185,16 +185,42 @@ def add_friend():
 		return jsonify(status="Already friend.")
 	if r1 == 0:
 		query = "INSERT INTO friends(hostuserid,friendusername,frienduserid) VALUES (%s,%s,%s)"
-		params = (int(hid),int(fid),fname)
+		params = (int(hid),fname,int(fid))
 		g.mydb.cursor.execute(query,params)
 		g.mydb.conn.commit()
 		if r2 == 0:
 			query = "INSERT INTO friends(hostuserid,friendusername,frienduserid) VALUES (%s,%s,%s)"
-			params = (int(fid),int(hid),hname)
+			params = (int(fid),hname,int(hid))
 			g.mydb.cursor.execute(query,params)
 			g.mydb.conn.commit()
 		return jsonify(status="OK")
 	return jsonify(status="ERROR")
+
+@app.route('/api/a3/update_location')
+def update_location():
+	hname = request.args.get("hname")
+	hid = request.args.get("hid")
+	location = request.args.get("location")
+	query = "DELETE FROM userlocations WHERE userid = %s"
+	params = (int(hid),)
+	g.mydb.cursor.execute(query,params)
+	g.mydb.conn.commit()
+	query = "INSERT INTO userlocations(username,userid,userlocation) VALUES (%s,%s,%s)"
+	params = (hname,int(hid),location)
+	g.mydb.cursor.execute(query,params)
+	g.mydb.conn.commit()
+	return jsonify(status="OK")
+
+@app.route('/api/a3/nearby_users')
+def nearby_users():
+	hname = request.args.get("hname")
+	hid = request.args.get("hid")
+	location = request.args.get("location")
+	query = "SELECT username,userid FROM userlocations WHERE userlocation = %s AND userid <> %s"
+	params = (location,int(hid))
+	g.mydb.cursor.execute(query,params)
+	data = g.mydb.cursor.fetchall()
+	return jsonify(status="OK", data=data)
 
 if __name__ == '__main__':
 	app.run(host='127.0.0.1', port=8000)

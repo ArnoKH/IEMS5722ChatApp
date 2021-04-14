@@ -19,4 +19,13 @@
         android:paddingLeft="7dp"
         android:paddingBottom="15dp"/>
 
+    <TextView
+        android:id="@+id/fl_userid"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/msg_username"
+        android:textColor="@color/black"
+        android:textSize="0sp"
+        android:visibility="invisible" />
+
 </LinearLayout>

@@ -5,6 +5,7 @@
     <string name="toolbar_text_m">IEMS5722</string>
     <string name="toolbar_text_c">Chatroom</string>
     <string name="toolbar_text_f">Friend List</string>
+    <string name="toolbar_text_f2">Nearby Users</string>
     <string name="btn_send">Send</string>
     <string name="et_hint">Input Message</string>
     <string name="back_hint">Go Back</string>
