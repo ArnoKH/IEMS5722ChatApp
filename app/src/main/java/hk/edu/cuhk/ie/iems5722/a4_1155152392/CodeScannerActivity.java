@@ -27,8 +27,6 @@ public class CodeScannerActivity extends AppCompatActivity {
         mCodeScanner.setDecodeCallback(new DecodeCallback() {
             @Override
             public void onDecoded(@NonNull final Result result) {
-                //TODO:需要实机测试
-                Log.d("111",result.getText());
                 Intent intent = new Intent();
                 intent.putExtra("result", result.getText());
                 setResult(1,intent);
@@ -53,5 +51,12 @@ public class CodeScannerActivity extends AppCompatActivity {
     protected void onPause() {
         mCodeScanner.releaseResources();
         super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        setResult(2,intent);
+        finish();
     }
 }

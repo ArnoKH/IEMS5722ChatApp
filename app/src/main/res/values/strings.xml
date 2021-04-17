@@ -1,11 +1,12 @@
 <resources>
-    <string name="app_name">A4_1155152392</string>
+    <string name="app_name">IEMS5722CHATAPP</string>
     <string name="btn_r1">Default Chatroom</string>
     <string name="btn_close">Close</string>
     <string name="toolbar_text_m">IEMS5722</string>
     <string name="toolbar_text_c">Chatroom</string>
     <string name="toolbar_text_f">Friend List</string>
     <string name="toolbar_text_f2">Nearby Users</string>
+    <string name="toolbar_text_f3">NFC Functions</string>
     <string name="btn_send">Send</string>
     <string name="et_hint">Input Message</string>
     <string name="back_hint">Go Back</string>
@@ -24,4 +25,12 @@
     <string name="friendlist_menu_2">Add via QR Code</string>
     <string name="friendlist_menu_3">Add via Location</string>
     <string name="friendlist_menu_4">Add via NFC</string>
+    <string name="friendlist_menu_5">Add via User ID</string>
+    <string name="service_name">NFC Card Simulator</string>
+    <string name="start_hce">Start NFC Card Emulator</string>
+    <string name="stop_hce">Stop NFC Card Emulator</string>
+    <string name="scan_nfc">Scan NFC Tag</string>
+    <string name="scanning">Waiting for scan NFC Tags</string>
+    <string name="warning">These functions have not been tested!</string>
+    <string name="card_title">IEMS5722 ChatApp UserInfo</string>
 </resources>

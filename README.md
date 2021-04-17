@@ -3,16 +3,28 @@ Final Project
 ## Group Member
 	LIU Kaihang 1155152392
 ## Progress
-Add Friend Feature: Location Feature Completed
-## TODO:
+All Completed.
+## Features
+
+Basic Feature
+
+    1.1 Sign Up
+
+    1.2 Login
   
 Add friend feature
+
+    2.1 Via User ID
+
+    2.2 Via Scan QR Code
   
-	 2.3 NFC
+	2.3 Via Nearby Location
+
+	2.4 Via NFC (haven't been tested)
 ## 可优化的地方
 
 1.密码验证应使用DH Key-Exchange防止MITM攻击
 
 2.a4的广播api发送的数据冗余过多
 
-3.权限请求可能需要合并？
+3.应将部分api改为Post，以接受含有空格的数据

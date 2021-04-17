@@ -222,5 +222,18 @@ def nearby_users():
 	data = g.mydb.cursor.fetchall()
 	return jsonify(status="OK", data=data)
 
+@app.route('/api/a3/search_users')
+def search_users():
+	uid = request.args.get("uid")
+	query = "SELECT name FROM userinfos WHERE uid = %s"
+	params = (int(uid),)
+	g.mydb.cursor.execute(query,params)
+	data = g.mydb.cursor.fetchall()
+	r = g.mydb.cursor.rowcount
+	if r == 0:
+		return jsonify(status="Invalid User ID.")
+	else:
+		return jsonify(status="OK", data=data)
+
 if __name__ == '__main__':
 	app.run(host='127.0.0.1', port=8000)

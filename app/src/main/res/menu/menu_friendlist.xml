@@ -11,23 +11,28 @@
         android:title="@string/refresh_hint"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/item_showQRcode"
+        android:id="@+id/item_searchbyid"
         android:orderInCategory="101"
+        android:title="@string/friendlist_menu_5"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/item_showQRcode"
+        android:orderInCategory="102"
         android:title="@string/friendlist_menu_1"
         app:showAsAction="never" />
     <item
         android:id="@+id/item_scan"
-        android:orderInCategory="102"
+        android:orderInCategory="103"
         android:title="@string/friendlist_menu_2"
         app:showAsAction="never" />
     <item
         android:id="@+id/item_location"
-        android:orderInCategory="103"
+        android:orderInCategory="104"
         android:title="@string/friendlist_menu_3"
         app:showAsAction="never" />
     <item
         android:id="@+id/item_nfc"
-        android:orderInCategory="104"
+        android:orderInCategory="105"
         android:title="@string/friendlist_menu_4"
         app:showAsAction="never" />
 </menu>

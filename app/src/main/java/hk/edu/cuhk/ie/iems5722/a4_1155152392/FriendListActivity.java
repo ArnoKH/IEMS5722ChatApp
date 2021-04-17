@@ -19,9 +19,11 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -44,9 +46,9 @@ public class FriendListActivity extends AppCompatActivity {
     private List<User> frienduserlist = new ArrayList<>();
     private FusedLocationProviderClient fusedLocationClient;
     private String userLocation;
-    private boolean via_location_swich = true;
-    private boolean camera_swich = true;
-
+    private boolean via_location_swich = false;
+    private boolean camera_swich = false;
+    private boolean nfc_swich = true;
     private String username, userid;
 
     @Override
@@ -62,28 +64,8 @@ public class FriendListActivity extends AppCompatActivity {
         username = getIntent().getStringExtra("username");
         userid = getIntent().getStringExtra("userid");
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        //检查相机权限
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            camera_swich = true;
-        } else {
-            ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.CAMERA},1);
-        }
-        //检查定位权限
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            via_location_swich = true;
-            getLocation();
-        } else {
-            ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},2);
-        }
-        RefreshFriendList mTask = new RefreshFriendList(new RefreshFriendList.RefreshCallBack() {
-            @Override
-            public void getData(List<User> list) {
-                frienduserlist.clear();
-                frienduserlist.addAll(list);
-                arrayAdapter.notifyDataSetChanged();
-            }
-        });
-        mTask.execute(userid);
+        askpermissions();
+        TaskRefreshFriendList();
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,34 +74,52 @@ public class FriendListActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            //相机
-            case 1:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    camera_swich = true;
-                } else {
-                    camera_swich = false;
-                    Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Scan QR Code feature disabled.", Snackbar.LENGTH_LONG).show();
-                }
-            //定位
-            case 2:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    via_location_swich = true;
-                    getLocation();
-                } else {
-                    via_location_swich = false;
-                    Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Add friend via location feature disabled.", Snackbar.LENGTH_LONG).show();
-                }
-            //???
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    protected void askpermissions() {
+        String[] permissions = new String[]{
+                Manifest.permission.CAMERA,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+        };
+        List<String> mPermissionList = new ArrayList<>();
+        for (int i = 0; i < permissions.length; i++) {
+            if (ActivityCompat.checkSelfPermission(FriendListActivity.this, permissions[i]) != PackageManager.PERMISSION_GRANTED) {
+                mPermissionList.add(permissions[i]);
+            }
+        }
+        if (mPermissionList.isEmpty()) {
+            camera_swich = true;
+            via_location_swich = true;
+            getLocation();
+        } else {
+            permissions = mPermissionList.toArray(new String[mPermissionList.size()]);//将List转为数组
+            ActivityCompat.requestPermissions(FriendListActivity.this, permissions, 4);
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 4) {
+            //检查相机权限
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                camera_swich = true;
+            } else {
+                camera_swich = false;
+                Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Scan QR Code feature disabled.", Snackbar.LENGTH_LONG).show();
+            }
+            //检查定位权限
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                via_location_swich = true;
+                getLocation();
+            } else {
+                via_location_swich = false;
+                Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Add friend via location feature disabled.", Snackbar.LENGTH_LONG).show();
+            }
+        }
+        //???
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
     @SuppressLint("MissingPermission")
-    protected void getLocation(){
+    protected void getLocation() {
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
@@ -139,10 +139,10 @@ public class FriendListActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Location... locations) {
             Geocoder geocoder = new Geocoder(FriendListActivity.this);
-            try{
+            try {
                 List<Address> addresses = geocoder.getFromLocation(locations[0].getLatitude(), locations[0].getLongitude(), 1);
-                if ((addresses !=  null) && ( addresses.size( ) > 0)){
-                    if(addresses.get(0).getAdminArea() == null){
+                if ((addresses != null) && (addresses.size() > 0)) {
+                    if (addresses.get(0).getAdminArea() == null) {
                         via_location_swich = false;
                         Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Cannot resolve city name. Add friend via location feature disabled.", Snackbar.LENGTH_LONG).show();
                     } else {
@@ -167,38 +167,55 @@ public class FriendListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_refresh_f:
-                RefreshFriendList mTask = new RefreshFriendList(new RefreshFriendList.RefreshCallBack() {
+                TaskRefreshFriendList();
+                return true;
+
+            case R.id.item_searchbyid:
+                LayoutInflater inflater_id = LayoutInflater.from(FriendListActivity.this);
+                View dialog_id_view = inflater_id.inflate(R.layout.dialog_search_uid,null);
+                AlertDialog.Builder builder_id = new AlertDialog.Builder(this);
+                builder_id.setView(dialog_id_view);
+                builder_id.setTitle("Search User by ID");
+                builder_id.setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
                     @Override
-                    public void getData(List<User> list) {
-                        frienduserlist.clear();
-                        frienduserlist.addAll(list);
-                        arrayAdapter.notifyDataSetChanged();
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
                     }
                 });
-                mTask.execute(userid);
+                builder_id.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String uid = ((EditText)dialog_id_view.findViewById(R.id.et_searchuid)).getText().toString();
+                        if(!uid.equals("")){
+                            searchandadd(uid);
+                        }
+                    }
+                });
+                AlertDialog dialog_id = builder_id.create();
+                dialog_id.show();
                 return true;
 
             case R.id.item_showQRcode:
-                Bitmap pic = QRCodeGenerator.createQRCode(username+','+userid);
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setView(R.layout.activity_show_qr_code);
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                ImageView mIVqrc = dialog.findViewById(R.id.IV_qrc);
+                Bitmap pic = QRCodeGenerator.createQRCode(username + ',' + userid);
+                AlertDialog.Builder builder_qr = new AlertDialog.Builder(this);
+                builder_qr.setView(R.layout.dialog_show_qr_code);
+                AlertDialog dialog_qr = builder_qr.create();
+                dialog_qr.show();
+                ImageView mIVqrc = dialog_qr.findViewById(R.id.IV_qrc);
                 mIVqrc.setImageBitmap(pic);
                 return true;
 
             case R.id.item_scan:
-                if(camera_swich){
+                if (camera_swich) {
                     Intent intent = new Intent(FriendListActivity.this, CodeScannerActivity.class);
-                    startActivityForResult(intent,1);
+                    startActivityForResult(intent, 1);
                 } else {
                     Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "This feature is unavailable for now.", Snackbar.LENGTH_LONG).show();
                 }
                 return true;
 
             case R.id.item_location:
-                if(via_location_swich){
+                if (via_location_swich) {
                     Intent intent = new Intent(FriendListActivity.this, AddFriendByLocationActivity.class);
                     intent.putExtra("username", username);
                     intent.putExtra("userid", userid);
@@ -210,6 +227,14 @@ public class FriendListActivity extends AppCompatActivity {
                 return true;
 
             case R.id.item_nfc:
+                if (nfc_swich) {
+                    Intent intent = new Intent(FriendListActivity.this, NFCActivity.class);
+                    intent.putExtra("username", username);
+                    intent.putExtra("userid", userid);
+                    startActivityForResult(intent, 2);
+                } else {
+                    Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "This feature is unavailable for now.", Snackbar.LENGTH_LONG).show();
+                }
                 return true;
 
             default:
@@ -223,54 +248,90 @@ public class FriendListActivity extends AppCompatActivity {
         //扫二维码的回传
         if (requestCode == 1 && resultCode == 1) {
             String[] friendinfo = data.getStringExtra("result").split(",");
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Are you sure want to add "+friendinfo[0]+" as friend?");
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if(userid.equals(friendinfo[1])){
-                        Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Cannot add yourself as friend.", Snackbar.LENGTH_LONG).show();
-                    } else {
-                        AddFriend(friendinfo);
+            if(friendinfo.length == 2){
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Are you sure want to add " + friendinfo[0] + " as friend?");
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
                     }
-                }
-            });
-            AlertDialog dialog = builder.create();
-            dialog.show();
+                });
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (userid.equals(friendinfo[1])) {
+                            Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Cannot add yourself as friend.", Snackbar.LENGTH_LONG).show();
+                        } else {
+                            AddFriend(friendinfo[0],friendinfo[1]);
+                        }
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else {
+                Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Invalid QR Code.", Snackbar.LENGTH_LONG).show();
+            }
+        }
+        //NFC的回传
+        if (requestCode == 2 && resultCode == 2) {
+            nfc_swich = false;
+            Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "NFC Functions unavailable.", Snackbar.LENGTH_LONG).show();
         }
         //下面可加其他回传
     }
 
-    protected void AddFriend(String[] finfo) {
-        AddFriendRequest mTask = new AddFriendRequest(new AddFriendRequest.AddFriendCallBack(){
+    protected void AddFriend(String fname, String fid) {
+        AddFriendRequest mTask = new AddFriendRequest(new AddFriendRequest.AddFriendCallBack() {
             @Override
             public void getData(String status) {
-                if(status.equals("OK")) {
+                if (status.equals("OK")) {
                     Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Succeed.", Snackbar.LENGTH_LONG).show();
-                    frienduserlist.add(new User(finfo[0],finfo[1]));
+                    frienduserlist.add(new User(fname, fid));
                     arrayAdapter.notifyDataSetChanged();
-                }
-                else {
+                } else {
                     Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), status, Snackbar.LENGTH_LONG).show();
                 }
             }
         });
-        mTask.execute(username,userid,finfo[0],finfo[1]);
+        mTask.execute(username, userid, fname, fid);
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
+        //用户切出去开权限回来时的操作
         if (!via_location_swich && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             via_location_swich = true;
             getLocation();
         }
+        if (!camera_swich && ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            camera_swich = true;
+        }
+        if (!nfc_swich && ActivityCompat.checkSelfPermission(this, Manifest.permission.NFC) == PackageManager.PERMISSION_GRANTED) {
+            nfc_swich = true;
+        }
+        TaskRefreshFriendList();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //用户切出去开权限回来时的操作
+        if (!via_location_swich && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            via_location_swich = true;
+            getLocation();
+        }
+        if (!camera_swich && ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            camera_swich = true;
+        }
+        if (!nfc_swich && ActivityCompat.checkSelfPermission(this, Manifest.permission.NFC) == PackageManager.PERMISSION_GRANTED) {
+            nfc_swich = true;
+        }
+        TaskRefreshFriendList();
+    }
+
+    protected void TaskRefreshFriendList() {
         RefreshFriendList mTask = new RefreshFriendList(new RefreshFriendList.RefreshCallBack() {
             @Override
             public void getData(List<User> list) {
@@ -282,21 +343,36 @@ public class FriendListActivity extends AppCompatActivity {
         mTask.execute(userid);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (!via_location_swich && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            via_location_swich = true;
-            getLocation();
+    protected void searchandadd(String uid){
+        if(uid.equals(userid)){
+            Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Cannot add yourself as friend.", Snackbar.LENGTH_LONG).show();
+        } else {
+            SearchUser mTask = new SearchUser(new SearchUser.SearchUserCallBack() {
+                @Override
+                public void getData(User result) {
+                    if(result != null){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(FriendListActivity.this);
+                        builder.setMessage("Are you sure want to add " + result.getUserName() + " as friend?");
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                AddFriend(result.getUserName(),result.getUserID());
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    } else {
+                        Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Invalid User ID", Snackbar.LENGTH_LONG).show();
+                    }
+                }
+            });
+            mTask.execute(uid);
         }
-        RefreshFriendList mTask = new RefreshFriendList(new RefreshFriendList.RefreshCallBack() {
-            @Override
-            public void getData(List<User> list) {
-                frienduserlist.clear();
-                frienduserlist.addAll(list);
-                arrayAdapter.notifyDataSetChanged();
-            }
-        });
-        mTask.execute(userid);
     }
 }
