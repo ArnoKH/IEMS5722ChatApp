@@ -20,7 +20,7 @@ Add friend feature
   
 	2.3 Via Nearby Location
 
-	2.4 Via NFC (haven't been tested)
+	2.4 Via NFC (haven't been full tested)
 ## 可优化的地方
 
 1.密码验证应使用DH Key-Exchange防止MITM攻击
