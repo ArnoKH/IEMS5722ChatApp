@@ -28,3 +28,15 @@ Add friend feature
 2.a4的广播api发送的数据冗余过多
 
 3.应将部分api改为Post，以接受含有空格的数据
+## Ref
+
+https://developer.android.com/guide
+
+https://blog.csdn.net/qq_32136827/article/details/84849865
+
+https://github.com/yuriy-budiyev/code-scanner
+
+https://github.com/underwindfall/NFCAndroid
+
+https://github.com/Peerbits/Android-NFC
+
