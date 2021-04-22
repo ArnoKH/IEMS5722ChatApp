@@ -6,7 +6,7 @@
         android:category="other"
         android:description="@string/card_title">
         <aid-filter
-            android:name="F0115515239200" />
+            android:name="D2760000850101" />
     </aid-group>
 
 </host-apdu-service>

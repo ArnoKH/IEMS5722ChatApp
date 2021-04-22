@@ -22,6 +22,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +54,9 @@ public class ChatActivity extends AppCompatActivity {
     private boolean[] scrolltrigger = {true};//滚动触发开关=防止重复触发用
 
     private Socket mSocket;
+
+    private final int MY_RESULT_OK = 1;
+    private final int MY_RESULT_ERROR = 2;
 
     //通知用变量
     NotificationManager manager;
@@ -159,20 +164,20 @@ public class ChatActivity extends AppCompatActivity {
                     scrolltrigger[0] =false;//关闭开关防止连续触发
                     int readpage=cpage[0]+1;
                     RefreshMsgList mTask= new RefreshMsgList(new RefreshMsgList.RefreshCallBack(){
-                        //回调：更新消息列表
+                        //回调：更新消息列表,页数和开关设置
                         @Override
-                        public void getData(List<Msg> list) {
-                            for(int i=0;i<list.size();i++){
-                                newMsg(list.get(i).getUserName(),list.get(i).getContent(),list.get(i).getTime());
+                        public void getData(List<Msg> list, int cp, int tp, int resultcode) {
+                            if(resultcode == MY_RESULT_OK) {
+                                for (int i = 0; i < list.size(); i++) {
+                                    newMsg(list.get(i).getUserName(), list.get(i).getContent(), list.get(i).getTime());
+                                }
+                                cpage[0] = cp;
+                                tpage[0] = tp;
+                                scrolltrigger[0] = true;
+                                arrayAdapter.notifyDataSetChanged();
+                            } else {
+                                Snackbar.make(ChatActivity.this.findViewById(R.id.lv_msg_list), "ERROR.", Snackbar.LENGTH_LONG).show();
                             }
-                            arrayAdapter.notifyDataSetChanged();
-                        }
-                        //回调：更新页数和开关设置
-                        @Override
-                        public void backData(int cp, int tp){
-                            cpage[0] =cp;
-                            tpage[0] =tp;
-                            scrolltrigger[0] = true;
                         }
                     });
                     mTask.execute(rid,readpage);
@@ -191,19 +196,19 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==R.id.item_refresh_c) {
             RefreshMsgList mTask= new RefreshMsgList(new RefreshMsgList.RefreshCallBack(){
-                //回调：更新消息列表
+                //回调：更新消息列表,已加载页数和总页数
                 @Override
-                public void getData(List<Msg> list) {
-                    for(int i=0;i<list.size();i++){
-                        newMsg(list.get(i).getUserName(),list.get(i).getContent(),list.get(i).getTime());
+                public void getData(List<Msg> list, int cp, int tp, int resultcode) {
+                    if(resultcode == MY_RESULT_OK) {
+                        for (int i = 0; i < list.size(); i++) {
+                            newMsg(list.get(i).getUserName(), list.get(i).getContent(), list.get(i).getTime());
+                        }
+                        cpage[0] = cp;
+                        tpage[0] = tp;
+                        arrayAdapter.notifyDataSetChanged();
+                    } else {
+                        Snackbar.make(ChatActivity.this.findViewById(R.id.lv_msg_list), "ERROR.", Snackbar.LENGTH_LONG).show();
                     }
-                    arrayAdapter.notifyDataSetChanged();
-                }
-                //回调：更新已加载页数和总页数
-                @Override
-                public void backData(int cp, int tp){
-                    cpage[0] =cp;
-                    tpage[0] =tp;
                 }
             });
             mTask.execute(rid,1);//只用于进房间首次刷新=加载第一页
@@ -316,8 +321,6 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                 });
-
-
             } catch(JSONException e) {
                 throw new RuntimeException(e);
             }

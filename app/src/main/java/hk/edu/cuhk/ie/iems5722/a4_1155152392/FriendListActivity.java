@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -50,6 +51,12 @@ public class FriendListActivity extends AppCompatActivity {
     private boolean camera_swich = false;
     private boolean nfc_swich = true;
     private String username, userid;
+
+    private final int REQUEST_MULTI_PERMISSIONS = 4;
+    private final int SCAN_REQUEST_CODE = 1;
+    private final int NFC_REQUEST_CODE = 2;
+    private final int MY_RESULT_OK = 1;
+    private final int MY_RESULT_ERROR = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,19 +98,19 @@ public class FriendListActivity extends AppCompatActivity {
             getLocation();
         } else {
             permissions = mPermissionList.toArray(new String[mPermissionList.size()]);//将List转为数组
-            ActivityCompat.requestPermissions(FriendListActivity.this, permissions, 4);
+            ActivityCompat.requestPermissions(FriendListActivity.this, permissions, REQUEST_MULTI_PERMISSIONS);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 4) {
+        if (requestCode == REQUEST_MULTI_PERMISSIONS) {
             //检查相机权限
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 camera_swich = true;
             } else {
                 camera_swich = false;
-                Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Scan QR Code feature disabled.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "Scan QR Code feature disabled.", Snackbar.LENGTH_LONG).show();
             }
             //检查定位权限
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -111,7 +118,7 @@ public class FriendListActivity extends AppCompatActivity {
                 getLocation();
             } else {
                 via_location_swich = false;
-                Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Add friend via location feature disabled.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "Add friend via location feature disabled.", Snackbar.LENGTH_LONG).show();
             }
         }
         //???
@@ -129,7 +136,7 @@ public class FriendListActivity extends AppCompatActivity {
                     mTask.execute(location);
                 } else {
                     via_location_swich = false;
-                    Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Error happened when getting location. Add friend via location feature disabled.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "Error happened when getting location. Add friend via location feature disabled.", Snackbar.LENGTH_LONG).show();
                 }
             }
         });
@@ -144,7 +151,7 @@ public class FriendListActivity extends AppCompatActivity {
                 if ((addresses != null) && (addresses.size() > 0)) {
                     if (addresses.get(0).getAdminArea() == null) {
                         via_location_swich = false;
-                        Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Cannot resolve city name. Add friend via location feature disabled.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "Cannot resolve city name. Add friend via location feature disabled.", Snackbar.LENGTH_LONG).show();
                     } else {
                         via_location_swich = true;
                         userLocation = addresses.get(0).getAdminArea().trim();
@@ -187,7 +194,11 @@ public class FriendListActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String uid = ((EditText)dialog_id_view.findViewById(R.id.et_searchuid)).getText().toString();
                         if(!uid.equals("")){
-                            searchandadd(uid);
+                            if(uid.length()>10){
+                                Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "User ID is too long.", Snackbar.LENGTH_LONG).show();
+                            } else {
+                                searchandadd(uid);
+                            }
                         }
                     }
                 });
@@ -208,9 +219,9 @@ public class FriendListActivity extends AppCompatActivity {
             case R.id.item_scan:
                 if (camera_swich) {
                     Intent intent = new Intent(FriendListActivity.this, CodeScannerActivity.class);
-                    startActivityForResult(intent, 1);
+                    startActivityForResult(intent, SCAN_REQUEST_CODE);
                 } else {
-                    Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "This feature is unavailable for now.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "This feature is unavailable for now.", Snackbar.LENGTH_LONG).show();
                 }
                 return true;
 
@@ -222,7 +233,7 @@ public class FriendListActivity extends AppCompatActivity {
                     intent.putExtra("userLocation", userLocation);
                     startActivity(intent);
                 } else {
-                    Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "This feature is unavailable for now.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "This feature is unavailable for now.", Snackbar.LENGTH_LONG).show();
                 }
                 return true;
 
@@ -233,7 +244,7 @@ public class FriendListActivity extends AppCompatActivity {
                     intent.putExtra("userid", userid);
                     startActivityForResult(intent, 2);
                 } else {
-                    Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "This feature is unavailable for now.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "This feature is unavailable for now.", Snackbar.LENGTH_LONG).show();
                 }
                 return true;
 
@@ -246,7 +257,7 @@ public class FriendListActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //扫二维码的回传
-        if (requestCode == 1 && resultCode == 1) {
+        if (requestCode == SCAN_REQUEST_CODE && resultCode == MY_RESULT_OK) {
             String[] friendinfo = data.getStringExtra("result").split(",");
             if(friendinfo.length == 2){
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -261,7 +272,7 @@ public class FriendListActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (userid.equals(friendinfo[1])) {
-                            Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Cannot add yourself as friend.", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "Cannot add yourself as friend.", Snackbar.LENGTH_LONG).show();
                         } else {
                             AddFriend(friendinfo[0],friendinfo[1]);
                         }
@@ -270,13 +281,13 @@ public class FriendListActivity extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             } else {
-                Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Invalid QR Code.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "Invalid QR Code.", Snackbar.LENGTH_LONG).show();
             }
         }
         //NFC的回传
-        if (requestCode == 2 && resultCode == 2) {
+        if (requestCode == NFC_REQUEST_CODE && resultCode == MY_RESULT_ERROR) {
             nfc_swich = false;
-            Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "NFC Functions unavailable.", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "NFC Functions unavailable.", Snackbar.LENGTH_LONG).show();
         }
         //下面可加其他回传
     }
@@ -286,11 +297,11 @@ public class FriendListActivity extends AppCompatActivity {
             @Override
             public void getData(String status) {
                 if (status.equals("OK")) {
-                    Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Succeed.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "Succeed.", Snackbar.LENGTH_LONG).show();
                     frienduserlist.add(new User(fname, fid));
                     arrayAdapter.notifyDataSetChanged();
                 } else {
-                    Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), status, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), status, Snackbar.LENGTH_LONG).show();
                 }
             }
         });
@@ -345,7 +356,7 @@ public class FriendListActivity extends AppCompatActivity {
 
     protected void searchandadd(String uid){
         if(uid.equals(userid)){
-            Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Cannot add yourself as friend.", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "Cannot add yourself as friend.", Snackbar.LENGTH_LONG).show();
         } else {
             SearchUser mTask = new SearchUser(new SearchUser.SearchUserCallBack() {
                 @Override
@@ -368,7 +379,7 @@ public class FriendListActivity extends AppCompatActivity {
                         AlertDialog dialog = builder.create();
                         dialog.show();
                     } else {
-                        Snackbar.make(FriendListActivity.this.getWindow().getDecorView(), "Invalid User ID", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(FriendListActivity.this.findViewById(R.id.lv_friend_list), "Invalid User ID", Snackbar.LENGTH_LONG).show();
                     }
                 }
             });

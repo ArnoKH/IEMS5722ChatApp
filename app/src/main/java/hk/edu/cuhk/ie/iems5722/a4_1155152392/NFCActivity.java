@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -27,6 +28,11 @@ public class NFCActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private String username, userid;
 
+    private final int REQUEST_NFC_PERMISSION = 3;
+    private final int NFC_REQUEST_CODE = 3;
+    private final int MY_RESULT_OK = 1;
+    private final int MY_RESULT_ERROR = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +43,8 @@ public class NFCActivity extends AppCompatActivity {
         mBtnBack = findViewById(R.id.toolbar_f_nfc_btn_back);
         mToolbar = findViewById(R.id.toolbar_f_nfc);
         setSupportActionBar(mToolbar);
+        username = getIntent().getStringExtra("username");
+        userid = getIntent().getStringExtra("userid");
 
         mBtnStartHCE.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,28 +52,28 @@ public class NFCActivity extends AppCompatActivity {
                 Intent intent = new Intent(NFCActivity.this, CardService.class);
                 intent.putExtra("ndefMessage", username+","+userid);
                 startService(intent);
-                Snackbar.make(NFCActivity.this.getWindow().getDecorView(), "HCE Started.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(NFCActivity.this.findViewById(R.id.btn_start_hce), "HCE Started.", Snackbar.LENGTH_LONG).show();
             }
         });
         mBtnStopHCE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 stopService(new Intent(NFCActivity.this, CardService.class));
-                Snackbar.make(NFCActivity.this.getWindow().getDecorView(), "HCE Stopped.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(NFCActivity.this.findViewById(R.id.btn_start_hce), "HCE Stopped.", Snackbar.LENGTH_LONG).show();
             }
         });
         mBtnScanNFC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(NFCActivity.this,NFCParserActivity.class);
-                startActivityForResult(intent,3);
+                startActivityForResult(intent,NFC_REQUEST_CODE);
             }
         });
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                setResult(1, intent);
+                setResult(MY_RESULT_OK, intent);
                 finish();
             }
         });
@@ -76,22 +84,22 @@ public class NFCActivity extends AppCompatActivity {
         boolean hce_exist = pm.hasSystemFeature(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION);
         if (nfc_exist && hce_exist) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.NFC) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.NFC}, 3);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.NFC}, REQUEST_NFC_PERMISSION);
             }
         } else {
             Intent intent = new Intent();
-            setResult(2, intent);
+            setResult(MY_RESULT_ERROR, intent);
             finish();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 3) {
+        if (requestCode == REQUEST_NFC_PERMISSION) {
             //NFC
             if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Intent intent = new Intent();
-                setResult(2, intent);
+                setResult(MY_RESULT_ERROR, intent);
                 finish();
             }
         }
@@ -102,7 +110,7 @@ public class NFCActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //扫描NFC Tag的回传
-        if (requestCode == 3 && resultCode == 1) {
+        if (requestCode == NFC_REQUEST_CODE && resultCode == MY_RESULT_OK) {
             String[] friendinfo = data.getStringExtra("messagestring").split(",");
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Are you sure want to add " + friendinfo[0] + " as friend?");
@@ -116,7 +124,7 @@ public class NFCActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (userid.equals(friendinfo[1])) {
-                        Snackbar.make(NFCActivity.this.getWindow().getDecorView(), "Cannot add yourself as friend.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(NFCActivity.this.findViewById(R.id.btn_start_hce), "Cannot add yourself as friend.", Snackbar.LENGTH_LONG).show();
                     } else {
                         AddFriend(friendinfo[0],friendinfo[1]);
                     }
@@ -132,10 +140,10 @@ public class NFCActivity extends AppCompatActivity {
             @Override
             public void getData(String status) {
                 if(status.equals("OK")) {
-                    Snackbar.make(NFCActivity.this.getWindow().getDecorView(), "Succeed.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(NFCActivity.this.findViewById(R.id.btn_start_hce), "Succeed.", Snackbar.LENGTH_LONG).show();
                 }
                 else {
-                    Snackbar.make(NFCActivity.this.getWindow().getDecorView(), status, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(NFCActivity.this.findViewById(R.id.btn_start_hce), status, Snackbar.LENGTH_LONG).show();
                 }
             }
         });
@@ -145,7 +153,7 @@ public class NFCActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        setResult(1, intent);
+        setResult(MY_RESULT_OK, intent);
         finish();
     }
 }

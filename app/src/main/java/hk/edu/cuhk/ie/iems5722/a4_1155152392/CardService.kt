@@ -22,13 +22,13 @@ class CardService  : HostApduService() {
             0x04.toByte(), // P1	- Parameter 1 - Instruction parameter 1
             0x00.toByte(), // P2	- Parameter 2 - Instruction parameter 2
             0x07.toByte(), // Lc field	- Number of bytes present in the data field of the command
-            0xF0.toByte(),
-            0x11.toByte(),
-            0x55.toByte(),
-            0x15.toByte(),
-            0x23.toByte(),
-            0x92.toByte(),
-            0x00.toByte(), // NDEF Tag Application name
+            0xD2.toByte(),
+            0x76.toByte(),
+            0x00.toByte(),
+            0x00.toByte(),
+            0x85.toByte(),
+            0x01.toByte(),
+            0x01.toByte(), // NDEF Tag Application name
             0x00.toByte()  // Le field	- Maximum number of bytes expected in the data field of the response to the command
     )
 
@@ -100,7 +100,7 @@ class CardService  : HostApduService() {
 
     private val NDEF_ID = byteArrayOf(0xE1.toByte(), 0x04.toByte())
 
-    private var NDEF_URI = NdefMessage(createTextRecord("en", "Ciao, come va?", NDEF_ID))
+    private var NDEF_URI = NdefMessage(createTextRecord("en", "Not a valid message", NDEF_ID))
     private var NDEF_URI_BYTES = NDEF_URI.toByteArray()
     private var NDEF_URI_LEN = fillByteArrayToFixedDimension(
             BigInteger.valueOf(NDEF_URI_BYTES.size.toLong()).toByteArray(), 2
@@ -112,14 +112,15 @@ class CardService  : HostApduService() {
         if (intent.hasExtra("ndefMessage")) {
             NDEF_URI =
                     NdefMessage(createTextRecord("en", intent.getStringExtra("ndefMessage").toString(), NDEF_ID))
-
+            Log.i(TAG, "onStartCommand() | NDEF " + intent.getStringExtra("ndefMessage").toString())
             NDEF_URI_BYTES = NDEF_URI.toByteArray()
             NDEF_URI_LEN = fillByteArrayToFixedDimension(
                     BigInteger.valueOf(NDEF_URI_BYTES.size.toLong()).toByteArray(), 2
             )
         }
 
-        Log.i(TAG, "onStartCommand() | NDEF" + NDEF_URI.toString())
+        Log.i(TAG, "onStartCommand() | NDEF " + NDEF_URI.toString())
+
 
         return Service.START_STICKY
     }

@@ -94,10 +94,10 @@ public class AddFriendByLocationActivity extends AppCompatActivity implements Ad
             @Override
             public void getData(String status) {
                 if(status.equals("OK")) {
-                    Snackbar.make(AddFriendByLocationActivity.this.getWindow().getDecorView(), "Succeed.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(AddFriendByLocationActivity.this.findViewById(R.id.lv_friend_list), "Succeed.", Snackbar.LENGTH_LONG).show();
                 }
                 else {
-                    Snackbar.make(AddFriendByLocationActivity.this.getWindow().getDecorView(), status, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(AddFriendByLocationActivity.this.findViewById(R.id.lv_friend_list), status, Snackbar.LENGTH_LONG).show();
                 }
             }
         });
@@ -129,9 +129,9 @@ public class AddFriendByLocationActivity extends AppCompatActivity implements Ad
         protected void onPostExecute(String status) {
             super.onPostExecute(status);
             if(status.equals("OK")){
-                Snackbar.make(AddFriendByLocationActivity.this.getWindow().getDecorView(), "Location upload succeed.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(AddFriendByLocationActivity.this.findViewById(R.id.lv_friend_list), "Location upload succeed.", Snackbar.LENGTH_LONG).show();
             } else {
-                Snackbar.make(AddFriendByLocationActivity.this.getWindow().getDecorView(), "Location upload failed.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(AddFriendByLocationActivity.this.findViewById(R.id.lv_friend_list), "Location upload failed.", Snackbar.LENGTH_LONG).show();
             }
         }
     }

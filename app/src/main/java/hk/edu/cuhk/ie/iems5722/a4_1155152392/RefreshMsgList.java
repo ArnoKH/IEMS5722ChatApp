@@ -14,10 +14,12 @@ import java.util.List;
 public class RefreshMsgList extends AsyncTask<Integer, Void, List<Msg>> {
 
     private int current_page,total_pages;
+    private int result_code = 2;
+    private final int MY_RESULT_OK = 1;
+    private final int MY_RESULT_ERROR = 2;
 
     interface RefreshCallBack {
-        void getData(List<Msg> list);
-        void backData(int cp, int tp);
+        void getData(List<Msg> list, int cp, int tp, int resultcode);
     }
     RefreshCallBack cb;
 
@@ -38,18 +40,23 @@ public class RefreshMsgList extends AsyncTask<Integer, Void, List<Msg>> {
             URL url = new URL("http://34.96.208.254/api/a3/get_messages?chatroom_id="+chatroom_id+"&page="+page);
             json_string=Download.downloadUrl(url);
             json = new JSONObject(json_string);
-            //String status = json.getString("status" ) ;
-            JSONObject data = json.getJSONObject("data");
-            current_page = data.getInt("current_page");
-            total_pages = data.getInt("total_pages");
-            JSONArray array = data.getJSONArray("messages");
-            for ( int i = 0; i < array.length(); i++) {
-                String username = array.getJSONObject(i).getString("name");
-                String msg_content = array.getJSONObject(i).getString("message");
-                String timestamp = array.getJSONObject(i).getString("message_time");
-                msglist.add(new Msg(username,msg_content,timestamp));
+            String status = json.getString("status") ;
+            if(status.equals("OK")){
+                JSONObject data = json.getJSONObject("data");
+                current_page = data.getInt("current_page");
+                total_pages = data.getInt("total_pages");
+                JSONArray array = data.getJSONArray("messages");
+                for ( int i = 0; i < array.length(); i++) {
+                    String username = array.getJSONObject(i).getString("name");
+                    String msg_content = array.getJSONObject(i).getString("message");
+                    String timestamp = array.getJSONObject(i).getString("message_time");
+                    msglist.add(new Msg(username,msg_content,timestamp));
+                }
+                result_code = 1;
+                return msglist;
+            } else if(status.equals("ERROR")){
+                return null;
             }
-            return msglist;
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -60,8 +67,11 @@ public class RefreshMsgList extends AsyncTask<Integer, Void, List<Msg>> {
     protected void onPostExecute(List<Msg> result) {
         //Log.d("PostExecute","-----PostExecute-----");
         super.onPostExecute(result);
-        cb.getData(result);
-        cb.backData(current_page, total_pages);
+        if(result_code == 1) {
+            cb.getData(result, current_page, total_pages, MY_RESULT_OK);
+        } else {
+            cb.getData(null, 0, 0, MY_RESULT_ERROR);
+        }
     }
 
 }
