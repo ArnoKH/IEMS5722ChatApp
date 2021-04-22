@@ -38,5 +38,5 @@ https://github.com/yuriy-budiyev/code-scanner
 
 https://github.com/underwindfall/NFCAndroid
 
-https://github.com/Peerbits/Android-NFC#screenshots
+https://github.com/Peerbits/Android-NFC
 
