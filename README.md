@@ -1,5 +1,7 @@
 # IEMS5722ChatApp
 Final Project
+
+Note: Server has been shutted down by Google in May 7th.
 ## Group Member
 	LIU Kaihang 1155152392
 ## Progress
